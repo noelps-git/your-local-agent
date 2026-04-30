@@ -1,36 +1,35 @@
 <div align="center">
 
-```
-██╗   ██╗ ██████╗ ██╗   ██╗██████╗
-╚██╗ ██╔╝██╔═══██╗██║   ██║██╔══██╗
- ╚████╔╝ ██║   ██║██║   ██║██████╔╝
-  ╚██╔╝  ██║   ██║██║   ██║██╔══██╗
-   ██║   ╚██████╔╝╚██████╔╝██║  ██║
-   ╚═╝    ╚═════╝  ╚═════╝ ╚═╝  ╚═╝
-        L O C A L   A G E N T
-```
+<pre>
+██╗   ██╗ ██████╗ ██╗   ██╗██████╗     ██╗      ██████╗  ██████╗ █████╗ ██╗
+╚██╗ ██╔╝██╔═══██╗██║   ██║██╔══██╗    ██║     ██╔═══██╗██╔════╝██╔══██╗██║
+ ╚████╔╝ ██║   ██║██║   ██║██████╔╝    ██║     ██║   ██║██║     ███████║██║
+  ╚██╔╝  ██║   ██║██║   ██║██╔══██╗    ██║     ██║   ██║██║     ██╔══██║██║
+   ██║   ╚██████╔╝╚██████╔╝██║  ██║    ███████╗╚██████╔╝╚██████╗██║  ██║███████╗
+   ╚═╝    ╚═════╝  ╚═════╝ ╚═╝  ╚═╝    ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
+</pre>
 
-**Your AI. Your machine. Your rules.**
+### The AI that runs on your machine — not theirs.
 
-*No cloud. No API keys. No monthly bill. No one watching.*
+*No cloud. No API keys. No bill. No one watching.*
 
 [![macOS](https://img.shields.io/badge/macOS-12%2B-black?style=flat-square&logo=apple)](https://www.apple.com/macos/)
 [![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-M1%20→%20M4-black?style=flat-square)](https://www.apple.com/mac/)
 [![Models](https://img.shields.io/badge/model-Qwen3%204B–32B-black?style=flat-square)](https://huggingface.co/ggml-org)
 [![License](https://img.shields.io/badge/license-MIT-black?style=flat-square)](LICENSE)
-[![Free](https://img.shields.io/badge/cost-₹0%20forever-black?style=flat-square)]()
+[![Free](https://img.shields.io/badge/cost-free%20forever-black?style=flat-square)]()
 
 </div>
 
 ---
 
-## The pitch
+## Why local?
 
 Every AI assistant you've used lives somewhere else. Your prompts travel over the internet, get logged, filtered, and processed on hardware you'll never see. That's fine for most things.
 
-But when you're debugging at 2am. Writing scripts you'd rather not explain. Asking the same dumb question for the fifteenth time. Working offline in a lab. Asking about anything that would get you flagged on a cloud provider —
+But when you're debugging at 2am. Writing scripts you'd rather not explain. Asking the same question for the fifteenth time. Working offline. Asking about anything that would get you flagged on a cloud provider —
 
-You want it **local**.
+You want it **on your machine**.
 
 **your-local-agent** puts a full AI assistant — model, inference engine, coding agent — entirely on your Mac. One command to install. One command to start. **Nothing leaves your machine. Ever.**
 
