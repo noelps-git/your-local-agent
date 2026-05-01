@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>your-local-agent — Unlimited. Offline. Yours.</title>
+
+<!-- SEO -->
+<meta name="description" content="A full AI coding assistant on your Mac. No token limits. No internet. No one reading your code. One command. Free forever.">
+<link rel="canonical" href="https://yourlocalagent.in">
+
+<!-- OG / Social -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yourlocalagent.in">
+<meta property="og:title" content="your-local-agent — Unlimited. Offline. Yours.">
+<meta property="og:description" content="A full AI coding assistant on your Mac. No token limits. No internet. No one reading your code. One command.">
+<meta property="og:image" content="https://opengraph.githubassets.com/1/noelps-git/your-local-agent">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="your-local-agent — Unlimited. Offline. Yours.">
+<meta name="twitter:description" content="A full AI coding assistant on your Mac. No token limits. No internet. No one reading your code.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #0D0D0D;
+  --bg-e:         #111111;
+  --bg-ee:        #161616;
+  --surface:      #1A1A1A;
+  --surface-h:    #1F1F1F;
+  --border:       rgba(255,255,255,0.07);
+  --border-b:     rgba(255,255,255,0.12);
+  --text:         #F0EEE8;
+  --text-2:       #9A9690;
+  --text-3:       #5A5750;
+  --accent:       #4F46E5;
+  --accent-h:     #6366F1;
+  --accent-dim:   rgba(79,70,229,0.10);
+  --green:        #00FF88;
+  --red:          #FF4455;
+  --font-d:       'Syne', sans-serif;
+  --font-b:       'DM Sans', sans-serif;
+  --font-m:       'JetBrains Mono', monospace;
+  --max:          960px;
+  --gap:          130px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+
+.container { max-width: var(--max); margin: 0 auto; padding: 0 32px; }
+section { padding: var(--gap) 0; }
+.divider { max-width: var(--max); margin: 0 auto; height: 1px; background: var(--border); }
+
+/* ── Nav ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13,13,13,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 32px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--font-m);
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: .02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-logo-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nav-link {
+  font-family: var(--font-b);
+  font-size: 13.5px;
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  transition: all .15s;
+  letter-spacing: -.01em;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,.04); }
+.nav-link.cta {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 500;
+  padding: 6px 14px;
+}
+.nav-link.cta:hover { background: var(--accent-h); }
+
+/* ── Section labels ── */
+.s-label {
+  font-family: var(--font-m);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.s-label::after { content:''; flex:1; max-width:40px; height:1px; background:var(--border-b); }
+
+.s-head {
+  font-family: var(--font-d);
+  font-size: clamp(30px,4vw,44px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  margin-bottom: 14px;
+}
+.s-sub { font-size: 16px; color: var(--text-2); font-weight: 300; max-width: 420px; }
+
+/* ── Terminal ── */
+.term {
+  background: #0A0A0A;
+  border: 1px solid var(--border-b);
+  border-radius: 8px;
+  padding: 18px 22px;
+  position: relative;
+  overflow: hidden;
+}
+.term::before {
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(79,70,229,.35),transparent);
+}
+.term-dots { display:flex; gap:6px; margin-bottom:14px; }
+.term-dot { width:9px; height:9px; border-radius:50%; background:#232323; }
+.term-line {
+  font-family: var(--font-m);
+  font-size: 13.5px;
+  line-height: 1.75;
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+}
+.term-ps  { color: var(--text-3); margin-right: 10px; user-select:none; }
+.term-cmd { color: var(--green); }
+.term-out { color: var(--text-2); }
+.term-dim { color: #3A3A3A; }
+.term-acc { color: var(--accent); font-weight: 500; }
+.term-ok  { color: var(--green); }
+.term-err { color: var(--red); }
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.cursor {
+  display:inline-block; width:6px; height:13px;
+  background:var(--green); vertical-align:middle; margin-left:2px;
+  animation: blink 1s step-end infinite;
+}
+
+.copy-btn {
+  position:absolute; top:14px; right:14px;
+  background:var(--surface); border:1px solid var(--border-b);
+  color:var(--text-3); font-family:var(--font-m); font-size:10px;
+  padding:3px 9px; border-radius:4px; cursor:pointer; transition:all .15s;
+}
+.copy-btn:hover { background:var(--surface-h); color:var(--text); }
+
+/* ── Buttons ── */
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-b); font-size:15px; font-weight:500;
+  padding:12px 24px; border-radius:6px; border:none;
+  cursor:pointer; text-decoration:none; transition:all .15s; letter-spacing:-0.01em;
+}
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { background:var(--accent-h); transform:translateY(-1px); }
+.btn-ghost { background:transparent; color:var(--text); border:1px solid var(--border-b); }
+.btn-ghost:hover { border-color:rgba(255,255,255,.22); background:rgba(255,255,255,.03); }
+
+/* ════════════════════════════════
+   HERO
+════════════════════════════════ */
+#hero {
+  padding: 96px 0 96px;
+  position: relative;
+}
+#hero::after {
+  content:''; position:absolute; top:0;left:0;right:0; height:600px;
+  background:radial-gradient(ellipse 55% 45% at 50% -5%, rgba(79,70,229,.10) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-m); font-size:11px; color:var(--text-3);
+  letter-spacing:.1em; text-transform:uppercase; margin-bottom:36px;
+}
+.hero-badge-dot {
+  width:6px; height:6px; border-radius:50%; background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation: blink 2s ease-in-out infinite;
+}
+
+.hero-h1 {
+  font-family: var(--font-d);
+  font-size: clamp(56px, 8.5vw, 96px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: .96;
+  color: var(--text);
+  margin-bottom: 32px;
+  text-wrap: balance;
+}
+.hero-h1 .accent { color: var(--accent); }
+
+.hero-sub {
+  font-size: clamp(17px,2.2vw,20px);
+  color: var(--text-2);
+  max-width: 480px;
+  line-height: 1.7;
+  margin-bottom: 48px;
+  font-weight: 300;
+}
+
+.hero-term-wrap { max-width:560px; margin-bottom:18px; }
+.hero-meta {
+  font-family:var(--font-m); font-size:11.5px; color:var(--text-3);
+  letter-spacing:.04em; margin-bottom:40px;
+}
+.hero-meta span { margin:0 8px; color:var(--border-b); }
+
+/* ════════════════════════════════
+   WHAT YOU GET
+════════════════════════════════ */
+#whatyouget { background: var(--bg-e); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+
+.wyg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 48px;
+}
+.wyg-card {
+  background: var(--bg);
+  padding: 36px 30px 32px;
+  transition: background .15s;
+}
+.wyg-card:hover { background: #101010; }
+.wyg-icon {
+  width: 48px; height: 48px;
+  color: var(--accent);
+  margin-bottom: 20px;
+  opacity: 0.85;
+}
+.wyg-icon svg { width: 100%; height: 100%; }
+.wyg-stat {
+  font-family: var(--font-d);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.wyg-label {
+  font-family: var(--font-m);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.wyg-desc {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ════════════════════════════════
+   FRUSTRATION SECTION
+════════════════════════════════ */
+#frustration {
+  background:var(--bg);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+
+.frust-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:2px;
+  background:var(--border); border:1px solid var(--border); border-radius:10px;
+  overflow:hidden; margin-top:52px;
+}
+.frust-card {
+  background:var(--bg-e); padding:36px 32px;
+}
+.frust-quote {
+  font-family:var(--font-m); font-size:12px; color:var(--red);
+  letter-spacing:.06em; text-transform:uppercase; margin-bottom:14px;
+}
+.frust-body {
+  font-size:15px; line-height:1.75; color:var(--text-2); font-weight:300;
+}
+.frust-body strong { color:var(--text); font-weight:500; }
+.frust-src {
+  font-family:var(--font-m); font-size:10.5px; color:var(--text-3);
+  margin-top:16px; letter-spacing:.04em;
+}
+
+.frust-answer {
+  margin-top:52px; text-align:center;
+}
+.frust-answer-text {
+  font-family: var(--font-d);
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.frust-answer-text .g { color: var(--green); }
+
+/* ════════════════════════════════
+   CHAT DEMO
+════════════════════════════════ */
+#demo { padding: var(--gap) 0; }
+
+.chat-shell {
+  margin-top: 48px;
+  border: 1px solid var(--border-b);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #080808;
+}
+.chat-scenarios {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px;
+  background: #0D0D0D;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.chat-sc {
+  font-family: var(--font-m);
+  font-size: 11.5px;
+  color: var(--text-3);
+  padding: 6px 14px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  background: none;
+  cursor: pointer;
+  letter-spacing: .04em;
+  transition: all .15s;
+}
+.chat-sc:hover { color: var(--text-2); background: rgba(255,255,255,.04); }
+.chat-sc.active { color: var(--text); background: var(--surface); border-color: var(--border-b); }
+
+.chat-window { display: flex; flex-direction: column; min-height: 420px; }
+.chat-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  background: #0A0A0A;
+}
+.chat-status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: blink 2s ease-in-out infinite;
+}
+.chat-status-txt { font-family: var(--font-m); font-size: 11px; color: var(--text-3); letter-spacing:.04em; }
+.chat-tokens { font-family: var(--font-m); font-size: 11px; color: var(--green); margin-left: auto; letter-spacing:.04em; }
+
+.chat-messages {
+  flex: 1;
+  padding: 24px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 320px;
+}
+
+.chat-msg-user { display: flex; justify-content: flex-end; }
+.chat-bubble-user {
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-b);
+  font-size: 14px;
+  line-height: 1.55;
+  padding: 11px 16px;
+  border-radius: 14px 14px 3px 14px;
+  max-width: 68%;
+  font-weight: 400;
+}
+
+.chat-msg-agent { display: flex; align-items: flex-start; gap: 10px; }
+.chat-agent-avatar {
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: var(--accent-dim);
+  border: 1px solid rgba(79,70,229,.25);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-m); font-size: 10px; color: var(--accent);
+}
+.chat-bubble-agent {
+  background: var(--surface);
+  border: 1px solid var(--border-b);
+  border-radius: 3px 14px 14px 14px;
+  padding: 14px 16px;
+  max-width: 78%;
+}
+.chat-bubble-agent pre {
+  font-family: var(--font-m);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--green);
+  background: #0A0A0A;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-top: 10px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.chat-bubble-agent p {
+  font-family: var(--font-b);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-2);
+  font-weight: 300;
+}
+.chat-bubble-agent p + pre { margin-top: 10px; }
+.chat-bubble-agent .agent-meta {
+  font-family: var(--font-m);
+  font-size: 10.5px;
+  color: var(--text-3);
+  margin-top: 10px;
+  letter-spacing: .04em;
+}
+.chat-bubble-agent .agent-meta .g { color: var(--green); }
+
+.chat-typing { display: flex; align-items: center; gap: 5px; padding: 14px 16px; }
+.chat-typing span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--text-3);
+  animation: typingDot 1.2s ease-in-out infinite;
+}
+.chat-typing span:nth-child(2) { animation-delay: .2s; }
+.chat-typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes typingDot {
+  0%,80%,100% { transform: scale(.6); opacity:.3; }
+  40% { transform: scale(1); opacity:1; }
+}
+
+.chat-input-row {
+  border-top: 1px solid var(--border);
+  padding: 14px 20px;
+  background: #0A0A0A;
+}
+.chat-input-box {
+  font-family: var(--font-b);
+  font-size: 14px;
+  color: var(--text-3);
+  font-style: italic;
+  min-height: 20px;
+}
+
+/* ════════════════════════════════
+   CAROUSEL
+════════════════════════════════ */
+#usecases { background: var(--bg-ee); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+
+.carousel { margin-top: 52px; position: relative; overflow: hidden; }
+.car-track { display: flex; transition: transform .55s cubic-bezier(.4,0,.2,1); }
+.car-slide {
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  padding: 40px 0 20px;
+}
+.car-left { display: flex; flex-direction: column; }
+.car-illus { width: 120px; height: 120px; margin-bottom: 28px; flex-shrink: 0; }
+.car-illus svg { width: 100%; height: 100%; }
+.car-tag {
+  font-family: var(--font-m);
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.car-title {
+  font-family: var(--font-d);
+  font-size: clamp(20px,2.5vw,26px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.car-body {
+  font-size: 14.5px;
+  color: var(--text-2);
+  line-height: 1.75;
+  font-weight: 300;
+  margin-bottom: 20px;
+}
+.car-outcome {
+  font-family: var(--font-m);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-3);
+  border-left: 2px solid var(--accent);
+  padding-left: 14px;
+}
+.car-outcome-label { color: var(--accent); font-weight: 500; display: block; margin-bottom: 4px; }
+
+.car-right { position: relative; }
+.car-term {
+  background: #080808;
+  border: 1px solid var(--border-b);
+  border-radius: 10px;
+  padding: 18px 20px 20px;
+  min-height: 280px;
+}
+.car-term-dots { display:flex; gap:5px; margin-bottom:14px; }
+.car-term-dot { width:8px; height:8px; border-radius:50%; background:#1C1C1C; }
+.car-term-lines {
+  font-family: var(--font-m);
+  font-size: 12px;
+  line-height: 1.85;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.car-line { opacity: 0; transition: opacity .25s ease; white-space: pre-wrap; word-break: break-all; }
+.car-line.show { opacity: 1; }
+
+.car-progress { height: 2px; background: var(--border); margin-top: 32px; border-radius: 1px; overflow: hidden; }
+.car-progress-bar { height: 100%; background: var(--accent); border-radius: 1px; width: 0%; transition: width linear; }
+
+.car-controls { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 28px; }
+.car-prev, .car-next {
+  background: var(--surface);
+  border: 1px solid var(--border-b);
+  color: var(--text-2);
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.car-prev:hover, .car-next:hover { background: var(--surface-h); color: var(--text); border-color: rgba(255,255,255,.2); }
+.car-dots { display: flex; gap: 8px; align-items: center; }
+.car-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border-b);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all .2s;
+}
+.car-dot.active { background: var(--accent); transform: scale(1.2); }
+
+/* ════════════════════════════════
+   HOW IT WORKS
+════════════════════════════════ */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 52px;
+}
+.step-card { background: var(--bg); padding: 36px 32px; }
+.step-n { font-family:var(--font-m); font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:18px; }
+.step-t { font-family:var(--font-d); font-size:19px; font-weight:700; color:var(--text); margin-bottom:20px; letter-spacing:-0.02em; }
+
+/* ════════════════════════════════
+   MODEL TABLE
+════════════════════════════════ */
+.table-wrap {
+  margin-top: 52px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+table { width:100%; border-collapse:collapse; }
+thead th {
+  font-family:var(--font-m); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-3); text-align:left; padding:15px 26px;
+  background:#080808; border-bottom:1px solid var(--border); font-weight:400;
+}
+tbody tr { border-bottom:1px solid var(--border); transition:background .12s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:rgba(255,255,255,.018); }
+tbody tr.rec { background:var(--accent-dim); }
+tbody tr.rec:hover { background:rgba(79,70,229,.16); }
+tbody td { padding:18px 26px; font-family:var(--font-m); font-size:13.5px; color:var(--text-2); }
+tbody td:first-child { color:var(--text); font-weight:500; }
+.rec-badge {
+  display:inline-block; background:var(--accent); color:#fff;
+  font-family:var(--font-m); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+  padding:2px 7px; border-radius:3px; margin-left:9px; vertical-align:middle;
+}
+
+/* ════════════════════════════════
+   COMPARISON TABLE
+════════════════════════════════ */
+.compare-table-wrap thead th { font-family:var(--font-d); font-size:15px; font-weight:700; letter-spacing:-0.01em; text-transform:none; color:var(--text); padding:20px 28px; }
+.compare-table-wrap thead th:first-child { color:var(--text-3); font-family:var(--font-m); font-size:10px; letter-spacing:.08em; text-transform:uppercase; font-weight:400; }
+.compare-table-wrap thead th.local-col { color:var(--accent); }
+.compare-table-wrap tbody td { font-family:var(--font-b); font-size:14.5px; padding:17px 28px; color:var(--text-2); font-weight:300; }
+.compare-table-wrap tbody td:first-child { font-weight:400; font-family:var(--font-b); font-size:14px; }
+.bad  { color:#EF4444; font-weight:500; }
+.good { color:var(--green); font-weight:500; }
+
+/* ════════════════════════════════
+   CTA
+════════════════════════════════ */
+#cta {
+  text-align:center;
+  background:var(--bg-e);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.cta-h { font-family:var(--font-d); font-size:clamp(34px,5vw,56px); font-weight:800; letter-spacing:-0.03em; line-height:1.04; margin-bottom:48px; }
+.cta-term-wrap { max-width:560px; margin:0 auto 38px; text-align:left; }
+
+/* ════════════════════════════════
+   FOOTER
+════════════════════════════════ */
+footer { padding:44px 0; border-top:1px solid var(--border); }
+.footer-inner { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.footer-text { font-family:var(--font-m); font-size:11.5px; color:var(--text-3); letter-spacing:.03em; }
+.footer-text a { color:var(--text-2); text-decoration:none; transition:color .15s; }
+.footer-text a:hover { color:var(--text); }
+.footer-links { display:flex; align-items:center; gap:20px; }
+.footer-badge { font-family:var(--font-m); font-size:10.5px; color:var(--text-3); border:1px solid var(--border); padding:4px 11px; border-radius:4px; letter-spacing:.06em; }
+
+/* ════════════════════════════════
+   ANIMATIONS
+════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(18px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.hero-badge   { animation: fadeUp .5s ease both; }
+.hero-h1      { animation: fadeUp .55s ease .06s both; }
+.hero-sub     { animation: fadeUp .55s ease .14s both; }
+.hero-term-wrap { animation: fadeUp .55s ease .26s both; }
+.hero-meta    { animation: fadeUp .55s ease .32s both; }
+.hero-cta     { animation: fadeUp .55s ease .38s both; }
+
+.reveal { opacity:0; transform:translateY(22px); transition:opacity .5s ease, transform .5s ease; }
+.reveal.in { opacity:1; transform:translateY(0); }
+
+/* ════════════════════════════════
+   RESPONSIVE
+════════════════════════════════ */
+@media(max-width:768px) {
+  :root { --gap:72px; }
+  .frust-grid, .steps-grid { grid-template-columns:1fr; }
+  .wyg-grid { grid-template-columns: 1fr 1fr; }
+  .frust-card, .step-card { border-bottom:1px solid var(--border); }
+  .car-slide { grid-template-columns: 1fr; gap: 28px; }
+  .car-right { display: none; }
+  .car-illus { width: 80px; height: 80px; }
+  thead th, tbody td { padding:12px 16px; }
+  .compare-table-wrap thead th, .compare-table-wrap tbody td { padding:12px 16px; }
+  .footer-inner { flex-direction:column; align-items:flex-start; gap:10px; }
+  .nav-inner { padding: 0 18px; }
+}
+@media(max-width:480px) {
+  .container { padding:0 18px; }
+  .hero-h1 { font-size:42px; }
+  .wyg-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <span class="nav-logo-dot"></span>
+      your-local-agent
+    </a>
+    <div class="nav-links">
+      <a href="#how" class="nav-link">Setup</a>
+      <a href="docs/" class="nav-link">Docs</a>
+      <a href="https://github.com/noelps-git/your-local-agent" target="_blank" rel="noopener" class="nav-link">GitHub</a>
+      <a href="#cta" class="nav-link cta">Install</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero">
+  <div class="container">
+
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      your-local-agent &nbsp;·&nbsp; open source &nbsp;·&nbsp; apple silicon
+    </div>
+
+    <h1 class="hero-h1">
+      Unlimited.<br>
+      Offline.<br>
+      <span class="accent">Yours.</span>
+    </h1>
+
+    <p class="hero-sub">
+      A full AI coding assistant. On your Mac.
+    </p>
+
+    <div class="hero-term-wrap">
+      <div class="term" id="hero-terminal">
+        <div class="term-dots"><div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div></div>
+        <div class="term-line">
+          <span class="term-ps">$</span>
+          <span class="term-cmd" id="hero-cmd">curl -fsSL https://raw.githubusercontent.com/noelps-git/your-local-agent/main/setup.sh | bash</span>
+          <span class="cursor"></span>
+        </div>
+        <button class="copy-btn" onclick="copyCmd('hero-cmd',this)">copy</button>
+      </div>
+    </div>
+
+    <p class="hero-meta">Works on M1, M2, M3, M4<span>·</span>5 minutes<span>·</span>Free forever</p>
+
+    <div class="hero-cta" style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="https://github.com/noelps-git/your-local-agent" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        Star on GitHub
+      </a>
+      <a href="#demo" class="btn btn-ghost">See it in action ↓</a>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ WHAT YOU GET ═══════════════ -->
+<section id="whatyouget">
+  <div class="container">
+    <div class="s-label">What you get</div>
+    <h2 class="s-head">Everything cloud AI withholds.</h2>
+    <div class="wyg-grid reveal">
+
+      <div class="wyg-card">
+        <div class="wyg-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="1.5" opacity="0.15"/>
+            <text x="24" y="30" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="16" fill="currentColor">∞</text>
+          </svg>
+        </div>
+        <div class="wyg-stat">Unlimited</div>
+        <div class="wyg-label">tokens &amp; sessions</div>
+        <p class="wyg-desc">No 5-hour windows. No per-prompt billing. Run 300 prompts back-to-back at 2 AM — same cost as running zero.</p>
+      </div>
+
+      <div class="wyg-card">
+        <div class="wyg-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="14" width="28" height="20" rx="3" stroke="currentColor" stroke-width="1.5" opacity="0.15"/>
+            <path d="M18 24h12M24 18v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+            <circle cx="35" cy="13" r="5" fill="currentColor" opacity="0.9"/>
+            <line x1="32" y1="16" x2="38" y2="10" stroke="#0D0D0D" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="32" y1="10" x2="38" y2="16" stroke="#0D0D0D" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="wyg-stat">$0</div>
+        <div class="wyg-label">per month, forever</div>
+        <p class="wyg-desc">No subscription. No API bill. No surprise charges. The compute is your own M-chip — already paid for.</p>
+      </div>
+
+      <div class="wyg-card">
+        <div class="wyg-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 8 L24 40" stroke="currentColor" stroke-width="1.5" opacity="0.2" stroke-dasharray="3 3"/>
+            <rect x="8" y="16" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+            <rect x="26" y="16" width="14" height="16" rx="2" fill="currentColor" opacity="0.08" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M29 24h8M29 27.5h5" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="wyg-stat">Offline</div>
+        <div class="wyg-label">always available</div>
+        <p class="wyg-desc">Air-gapped lab, plane wifi, client site with no internet. Your AI works wherever you do.</p>
+      </div>
+
+      <div class="wyg-card">
+        <div class="wyg-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 10 C16 10 10 16 10 24 C10 32 16 38 24 38 C32 38 38 32 38 24" stroke="currentColor" stroke-width="1.5" opacity="0.3" stroke-linecap="round"/>
+            <path d="M30 10 L38 10 L38 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+            <line x1="24" y1="24" x2="37" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="wyg-stat">Zero logs</div>
+        <div class="wyg-label">prompts stay private</div>
+        <p class="wyg-desc">Nothing is sent to a server. No training pipeline. No one reading your code. Not even us.</p>
+      </div>
+
+      <div class="wyg-card">
+        <div class="wyg-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="18" width="28" height="18" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+            <path d="M17 18 V14 C17 11 20 9 24 9 C28 9 31 11 31 14 V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+            <circle cx="24" cy="28" r="3" fill="currentColor" opacity="0.7"/>
+          </svg>
+        </div>
+        <div class="wyg-stat">No filters</div>
+        <div class="wyg-label">unfiltered responses</div>
+        <p class="wyg-desc">Security research, exploit analysis, malware RE — no content policy blocking legitimate work.</p>
+      </div>
+
+      <div class="wyg-card">
+        <div class="wyg-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="10" width="20" height="28" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+            <path d="M12 17h12M12 21h12M12 25h8" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+            <path d="M32 28 L40 36" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+            <circle cx="30" cy="26" r="6" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="wyg-stat">Reads files</div>
+        <div class="wyg-label">full repo context</div>
+        <p class="wyg-desc">Points directly at your codebase. No copy-paste. No truncation. The agent sees what you see.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ FRUSTRATION ═══════════════ -->
+<section id="frustration">
+  <div class="container">
+    <div class="s-label">The problem</div>
+    <h2 class="s-head">You're not out of ideas.<br>You're out of tokens.</h2>
+    <p class="s-sub">Real quotes from real developers, week of April 2026.</p>
+
+    <div class="frust-grid reveal">
+
+      <div class="frust-card">
+        <div class="frust-quote">r/ClaudeAI · Apr 2026</div>
+        <p class="frust-body">
+          "I literally <strong>JUST got a Pro subscription</strong>, and my very first prompt nuked my daily usage limit and apparently 13% of my total weekly limit. Are my expectations just way too high?"
+        </p>
+        <p class="frust-src">— u/dev_exhausted · 847 upvotes</p>
+      </div>
+
+      <div class="frust-card">
+        <div class="frust-quote">dev.to · Mar 2026</div>
+        <p class="frust-body">
+          "By <strong>message 30 you're paying 31× what message 1 cost.</strong> Once you've burned past about 60% of the context window, the model's output quality starts dropping."
+        </p>
+        <p class="frust-src">— Token Optimisation 101, DEV Community</p>
+      </div>
+
+      <div class="frust-card">
+        <div class="frust-quote">Startup Fortune · Apr 2026</div>
+        <p class="frust-body">
+          "Claude Code on Opus 4.6 with two parallel sessions <strong>hit 100% of the 5-hour limit in 20 minutes.</strong> That's not a marginal difference — it's a workflow-breaking one."
+        </p>
+        <p class="frust-src">— Startup Fortune benchmark</p>
+      </div>
+
+      <div class="frust-card">
+        <div class="frust-quote">r/LocalLLaMA</div>
+        <p class="frust-body">
+          "The Pro plan imposes a strict limit of <strong>10–40 prompts every five hours</strong> — a constraint that many developers find they exhaust within mere minutes of intensive coding sessions."
+        </p>
+        <p class="frust-src">— Goose vs Claude Code thread</p>
+      </div>
+
+    </div>
+
+    <div class="frust-answer reveal">
+      <p class="frust-answer-text">
+        your-local-agent runs <span class="g">unlimited sessions</span>, at <span class="g">zero per-token cost</span>, with <span class="g">no 5-hour reset window</span> — because the model is on your machine, not theirs.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ DEMO ═══════════════ -->
+<section id="demo">
+  <div class="container">
+    <div class="s-label">See it work</div>
+    <h2 class="s-head">Ask. Get an answer.<br>No meter ticking.</h2>
+    <p class="s-sub">Pick a scenario and watch a real conversation unfold.</p>
+
+    <div class="chat-shell reveal" id="chat-shell">
+      <div class="chat-scenarios">
+        <button class="chat-sc active" data-idx="0">WebSocket bug</button>
+        <button class="chat-sc" data-idx="1">Auth refactor</button>
+        <button class="chat-sc" data-idx="2">Binary RE</button>
+      </div>
+      <div class="chat-window" id="chat-window">
+        <div class="chat-status">
+          <span class="chat-status-dot"></span>
+          <span class="chat-status-txt">your-local-agent · localhost:11434 · qwen3:8b</span>
+          <span class="chat-tokens">∞ tokens remaining</span>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-row">
+          <div class="chat-input-box" id="chat-input-display"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ USE CASES CAROUSEL ═══════════════ -->
+<section id="usecases">
+  <div class="container">
+    <div class="s-label">Deep use cases</div>
+    <h2 class="s-head">Where it actually matters.</h2>
+    <p class="s-sub">Three industries. Three problems cloud AI literally cannot solve.</p>
+
+    <div class="carousel reveal" id="uc-carousel">
+      <div class="car-track" id="car-track">
+
+        <!-- SLIDE 0: Security -->
+        <div class="car-slide" data-idx="0">
+          <div class="car-left">
+            <div class="car-illus">
+              <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="90" fill="#0F0F1A" stroke="rgba(79,70,229,0.15)" stroke-width="1"/>
+                <path d="M100 30 L140 50 L140 100 C140 128 122 148 100 158 C78 148 60 128 60 100 L60 50 Z" fill="rgba(79,70,229,0.08)" stroke="rgba(79,70,229,0.4)" stroke-width="1.5"/>
+                <rect x="82" y="82" width="36" height="30" rx="3" fill="#0D0D0D" stroke="rgba(0,255,136,0.4)" stroke-width="1"/>
+                <text x="100" y="102" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(0,255,136,0.7)">0x401A20</text>
+                <text x="100" y="113" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(0,255,136,0.4)">RC4 key →</text>
+                <circle cx="100" cy="56" r="8" fill="rgba(79,70,229,0.3)" stroke="rgba(79,70,229,0.6)" stroke-width="1"/>
+                <text x="100" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="rgba(79,70,229,0.9)">✓</text>
+              </svg>
+            </div>
+            <div class="car-tag">Security Research</div>
+            <h3 class="car-title">Malware RE in an air-gapped lab</h3>
+            <p class="car-body">You've captured an unknown loader binary from a client endpoint. You're in an isolated network — ChatGPT is unreachable, and cloud models refuse exploit payloads outright. You need to reverse it now.</p>
+            <div class="car-outcome">
+              <span class="car-outcome-label">What happens →</span>
+              Reads your Ghidra decompile, identifies the RC4 variant, writes a Python config decryptor, extracts C2 domain. Fully offline. No content filter.
+            </div>
+          </div>
+          <div class="car-right">
+            <div class="car-term" id="car-term-0">
+              <div class="car-term-dots"><div class="car-term-dot"></div><div class="car-term-dot"></div><div class="car-term-dot"></div></div>
+              <div class="car-term-lines" id="car-lines-0"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 1: Biotech -->
+        <div class="car-slide" data-idx="1">
+          <div class="car-left">
+            <div class="car-illus">
+              <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="90" fill="#0A0F0A" stroke="rgba(0,255,136,0.1)" stroke-width="1"/>
+                <path d="M70 40 Q100 65 130 90 Q100 115 70 140 Q100 165 130 160" stroke="rgba(0,255,136,0.3)" stroke-width="1.5" fill="none"/>
+                <path d="M130 40 Q100 65 70 90 Q100 115 130 140 Q100 165 70 160" stroke="rgba(79,70,229,0.3)" stroke-width="1.5" fill="none"/>
+                <line x1="85" y1="53" x2="115" y2="53" stroke="rgba(0,255,136,0.2)" stroke-width="1"/>
+                <line x1="75" y1="72" x2="125" y2="72" stroke="rgba(0,255,136,0.2)" stroke-width="1"/>
+                <line x1="73" y1="91" x2="127" y2="91" stroke="rgba(0,255,136,0.2)" stroke-width="1"/>
+                <line x1="75" y1="110" x2="125" y2="110" stroke="rgba(0,255,136,0.2)" stroke-width="1"/>
+                <line x1="82" y1="129" x2="118" y2="129" stroke="rgba(0,255,136,0.2)" stroke-width="1"/>
+                <circle cx="100" cy="100" r="12" fill="rgba(0,255,136,0.06)" stroke="rgba(0,255,136,0.3)" stroke-width="1"/>
+                <text x="100" y="104" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="rgba(0,255,136,0.7)">Ro5</text>
+              </svg>
+            </div>
+            <div class="car-tag">Biotech / Drug Discovery</div>
+            <h3 class="car-title">Proprietary SMILES that can't leave the lab</h3>
+            <p class="car-body">Your lab has 800 novel compound candidates as SMILES strings. Pasting them into any cloud AI violates your IP agreement. You need to iterate on RDKit scripts at 11 PM before a board meeting.</p>
+            <div class="car-outcome">
+              <span class="car-outcome-label">What happens →</span>
+              Reads your local .csv, fixes the RDKit TypeError, applies Lipinski Ro5 filter, outputs 307 passing candidates. Your compounds never left the machine.
+            </div>
+          </div>
+          <div class="car-right">
+            <div class="car-term" id="car-term-1">
+              <div class="car-term-dots"><div class="car-term-dot"></div><div class="car-term-dot"></div><div class="car-term-dot"></div></div>
+              <div class="car-term-lines" id="car-lines-1"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: Embedded -->
+        <div class="car-slide" data-idx="2">
+          <div class="car-left">
+            <div class="car-illus">
+              <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="90" fill="#0D0D0A" stroke="rgba(255,180,50,0.1)" stroke-width="1"/>
+                <rect x="65" y="65" width="70" height="70" rx="4" fill="#111" stroke="rgba(255,180,50,0.3)" stroke-width="1.5"/>
+                <rect x="75" y="75" width="50" height="50" rx="2" fill="rgba(255,180,50,0.04)" stroke="rgba(255,180,50,0.15)" stroke-width="1"/>
+                <line x1="50" y1="80" x2="65" y2="80" stroke="rgba(255,180,50,0.3)" stroke-width="1"/>
+                <line x1="50" y1="92" x2="65" y2="92" stroke="rgba(255,180,50,0.3)" stroke-width="1"/>
+                <line x1="50" y1="104" x2="65" y2="104" stroke="rgba(255,180,50,0.3)" stroke-width="1"/>
+                <line x1="50" y1="116" x2="65" y2="116" stroke="rgba(255,180,50,0.3)" stroke-width="1"/>
+                <line x1="135" y1="80" x2="150" y2="80" stroke="rgba(255,180,50,0.3)" stroke-width="1"/>
+                <line x1="135" y1="92" x2="150" y2="92" stroke="rgba(255,180,50,0.3)" stroke-width="1"/>
+                <line x1="135" y1="104" x2="150" y2="104" stroke="rgba(255,180,50,0.3)" stroke-width="1"/>
+                <line x1="135" y1="116" x2="150" y2="116" stroke="rgba(255,180,50,0.3)" stroke-width="1"/>
+                <text x="100" y="98" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(255,180,50,0.5)">Cortex-M4</text>
+                <text x="100" y="108" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="rgba(255,180,50,0.4)">FreeRTOS</text>
+              </svg>
+            </div>
+            <div class="car-tag">Embedded / Firmware</div>
+            <h3 class="car-title">Debugging stripped ARM at 35,000 ft</h3>
+            <p class="car-body">You're on a flight to a client site. The firmware is stripped — no debug symbols. You need GDB watchpoints and pretty-printers written on the fly. No wifi. No Claude. Deadline in 4 hours.</p>
+            <div class="car-outcome">
+              <span class="car-outcome-label">What happens →</span>
+              Reads your objdump output, infers FreeRTOS 10.x TCB layout, writes debug_init.gdb with watchpoints. No internet. No timer.
+            </div>
+          </div>
+          <div class="car-right">
+            <div class="car-term" id="car-term-2">
+              <div class="car-term-dots"><div class="car-term-dot"></div><div class="car-term-dot"></div><div class="car-term-dot"></div></div>
+              <div class="car-term-lines" id="car-lines-2"></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /car-track -->
+
+      <div class="car-progress"><div class="car-progress-bar" id="car-progress-bar"></div></div>
+
+      <div class="car-controls">
+        <button class="car-prev" id="car-prev" onclick="carNav(-1)">←</button>
+        <div class="car-dots" id="car-dots">
+          <button class="car-dot active" onclick="carGoTo(0)"></button>
+          <button class="car-dot" onclick="carGoTo(1)"></button>
+          <button class="car-dot" onclick="carGoTo(2)"></button>
+        </div>
+        <button class="car-next" id="car-next" onclick="carNav(1)">→</button>
+      </div>
+
+    </div><!-- /carousel -->
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<section id="how">
+  <div class="container">
+    <div class="s-label">Setup</div>
+    <h2 class="s-head">Three steps.</h2>
+    <p class="s-sub">From nothing to a running local AI in under five minutes.</p>
+
+    <div class="steps-grid reveal">
+      <div class="step-card">
+        <div class="step-n">Step 01</div>
+        <div class="step-t">Run one command</div>
+        <div class="term">
+          <div class="term-line"><span class="term-ps">$</span><span class="term-cmd" id="step1-cmd">curl -fsSL https://raw.githubusercontent.com/noelps-git/your-local-agent/main/setup.sh | bash</span></div>
+          <button class="copy-btn" onclick="copyCmd('step1-cmd',this)">copy</button>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-n">Step 02</div>
+        <div class="step-t">Pick your model</div>
+        <div class="term">
+          <div class="term-line"><span class="term-ps">$</span><span class="term-cmd">local-ai-setup</span></div>
+          <div class="term-line" style="margin-top:4px;"><span class="term-out" style="font-size:12px;color:var(--text-3);">↳ auto-detected for your RAM</span></div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-n">Step 03</div>
+        <div class="step-t">Start</div>
+        <div class="term">
+          <div class="term-line"><span class="term-ps">$</span><span class="term-cmd">local-ai-start</span></div>
+          <div class="term-line" style="margin-top:4px;"><span class="term-out" style="font-size:12px;color:var(--text-3);">↳ running at localhost:11434</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;text-align:center;">
+      <a href="docs/" class="btn btn-ghost">Full documentation →</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ MODELS ═══════════════ -->
+<section id="models">
+  <div class="container">
+    <div class="s-label">Models</div>
+    <h2 class="s-head">Your RAM. Your model.</h2>
+    <p class="s-sub">Auto-detected at setup. Swap anytime.</p>
+
+    <div class="table-wrap reveal">
+      <table>
+        <thead><tr><th>RAM</th><th>Model</th><th>Size</th><th>Speed</th></tr></thead>
+        <tbody>
+          <tr><td>8 GB</td><td>Qwen3 4B</td><td>3.2 GB</td><td>~35 tok/s</td></tr>
+          <tr class="rec"><td>16 GB<span class="rec-badge">recommended</span></td><td>Qwen3 8B</td><td>5 GB</td><td>~25 tok/s</td></tr>
+          <tr><td>24 GB</td><td>Qwen3 14B</td><td>9 GB</td><td>~20 tok/s</td></tr>
+          <tr><td>32 GB+</td><td>Qwen3 32B</td><td>19.5 GB</td><td>~12 tok/s</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ COMPARISON ═══════════════ -->
+<section id="compare">
+  <div class="container">
+    <div class="s-label">Comparison</div>
+    <h2 class="s-head">Cloud AI vs.<br>your-local-agent.</h2>
+
+    <div class="table-wrap compare-table-wrap reveal">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Cloud AI</th>
+            <th class="local-col">your-local-agent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Token limits</td><td><span class="bad">Yes — resets every 5h</span></td><td><span class="good">None. Ever.</span></td></tr>
+          <tr><td>Works offline</td><td><span class="bad">No</span></td><td><span class="good">Yes — plane, lab, bunker</span></td></tr>
+          <tr><td>Prompts stored / logged</td><td><span class="bad">Yes</span></td><td><span class="good">No — never leaves device</span></td></tr>
+          <tr><td>Content filtered</td><td><span class="bad">Yes — blocks security work</span></td><td><span class="good">No filters</span></td></tr>
+          <tr><td>Monthly cost</td><td><span class="bad">$20–$200/mo</span></td><td><span class="good">$0 forever</span></td></tr>
+          <tr><td>Reads local files directly</td><td><span class="bad">No — you paste manually</span></td><td><span class="good">Yes — full repo access</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section id="cta">
+  <div class="container">
+    <h2 class="cta-h">Unlimited.<br>Offline.<br>Yours.</h2>
+    <div class="cta-term-wrap">
+      <div class="term">
+        <div class="term-dots"><div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div></div>
+        <div class="term-line">
+          <span class="term-ps">$</span>
+          <span class="term-cmd" id="cta-cmd">curl -fsSL https://raw.githubusercontent.com/noelps-git/your-local-agent/main/setup.sh | bash</span>
+          <span class="cursor"></span>
+        </div>
+        <button class="copy-btn" onclick="copyCmd('cta-cmd',this)">copy</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://github.com/noelps-git/your-local-agent" target="_blank" rel="noopener" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        View on GitHub
+      </a>
+      <a href="docs/" class="btn btn-ghost">Read the docs →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <p class="footer-text">
+        Built by <a href="https://github.com/noelps-git" target="_blank" rel="noopener">Noel Rajakumar</a>
+        &nbsp;·&nbsp; MIT License &nbsp;·&nbsp;
+        <a href="https://github.com/noelps-git/your-local-agent" target="_blank" rel="noopener">github.com/noelps-git/your-local-agent</a>
+      </p>
+      <div class="footer-links">
+        <a href="docs/" class="footer-text">Docs</a>
+        <span class="footer-badge">v1.0.0-beta</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script>
+function copyCmd(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'copied!';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 1800);
+  });
+}
+
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.07 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+
+<script>
+// ─── CHAT DEMO ───────────────────────────────────────────────
+const CHAT_SCENARIOS = [
+  {
+    label: 'WebSocket bug',
+    user: 'Why is my WebSocket reconnect loop burning 100% CPU after a drop?',
+    thinking: 'Reading ./src/ws/reconnect.ts…',
+    response: `Found the issue in <strong>reconnect.ts:47</strong>.\n\nYour exponential backoff never resets on a successful reconnect. Each failed attempt doubles the delay until <code>MAX_DELAY</code>, but <code>reconnect()</code> never resets <code>this.attempts</code> back to 0 when <code>onOpen</code> fires — so the next drop immediately jumps to the max delay and polls the fastest path in a tight loop.`,
+    code: `// reconnect.ts — onOpen handler\nthis.ws.onopen = () => {\n  this.attempts = 0;  // ← add this line\n  this.emit('connected');\n};`,
+    meta: '0 tokens billed · offline · ∞ remaining'
+  },
+  {
+    label: 'Auth refactor',
+    user: 'Refactor all .then() chains in my auth middleware to async/await',
+    thinking: 'Reading ./middleware/auth.js, ./routes/*.js…',
+    response: `Found <strong>14 .then() chains</strong> across 3 files. Refactoring auth.js, userRouter.js, and adminRouter.js.\n\nMain change: nested promise chains in <code>verifyToken()</code> converted to a flat async function. Error handling consolidated into a single try/catch.`,
+    code: `// auth.js — before (47 lines) → after (31 lines)\nasync function verifyToken(req, res, next) {\n  try {\n    const token = req.headers.authorization?.split(' ')[1];\n    req.user = await jwt.verify(token, SECRET);\n    next();\n  } catch (err) {\n    res.status(401).json({ error: 'Unauthorized' });\n  }\n}`,
+    meta: '3 files rewritten · 0 tokens billed · fully offline'
+  },
+  {
+    label: 'Binary RE',
+    user: "Analyse this Ghidra decompile — I think it's an RC4 config decryptor",
+    thinking: 'Reading ./samples/loader_decompile.c…',
+    response: `Confirmed — this is a <strong>modified RC4</strong> implementation. The key schedule at <code>0x401A20</code> uses the PE timestamp as seed, mixed with a hardcoded 16-byte XOR mask.\n\nThe config blob at <code>0x402F00</code> decrypts to a null-terminated C2 domain. Writing a standalone Python decryptor now.`,
+    code: `# decrypt_config.py — auto-generated\nimport struct, sys\n\nKEY_SEED = 0x5F3A2B1C  # PE timestamp\nMASK = bytes.fromhex("deadbeef...")\n\ndef rc4_decrypt(data, key):\n    # ... KSA + PRGA\n    return plaintext\n\nc2 = rc4_decrypt(CONFIG_BLOB, derive_key(KEY_SEED, MASK))\nprint("C2:", c2.decode())  # → cdn-update[.]ru`,
+    meta: 'air-gapped · no content filter · 0 tokens billed'
+  }
+];
+
+let chatActive = 0;
+let chatTimer = null;
+
+function initChat() {
+  document.querySelectorAll('.chat-sc').forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      chatActive = i;
+      document.querySelectorAll('.chat-sc').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      clearTimeout(chatTimer);
+      playChat(i);
+    });
+  });
+  playChat(0);
+}
+
+function playChat(idx) {
+  const sc = CHAT_SCENARIOS[idx];
+  const msgs = document.getElementById('chat-messages');
+  const inputBox = document.getElementById('chat-input-display');
+  msgs.innerHTML = '';
+  inputBox.textContent = '';
+
+  let i = 0;
+  const prompt = sc.user;
+  inputBox.style.color = 'var(--text)';
+  inputBox.style.fontStyle = 'normal';
+
+  function typePrompt() {
+    if (i <= prompt.length) {
+      inputBox.textContent = prompt.slice(0, i) + (i < prompt.length ? '|' : '');
+      i++;
+      chatTimer = setTimeout(typePrompt, 28);
+    } else {
+      inputBox.textContent = '';
+      inputBox.style.color = 'var(--text-3)';
+      inputBox.style.fontStyle = 'italic';
+      chatTimer = setTimeout(() => showUserBubble(sc, msgs), 300);
+    }
+  }
+  chatTimer = setTimeout(typePrompt, 400);
+}
+
+function showUserBubble(sc, msgs) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg-user';
+  div.innerHTML = `<div class="chat-bubble-user">${sc.user}</div>`;
+  msgs.appendChild(div);
+  div.style.opacity = '0'; div.style.transition = 'opacity .25s';
+  requestAnimationFrame(() => { requestAnimationFrame(() => { div.style.opacity = '1'; }); });
+  chatTimer = setTimeout(() => showTyping(sc, msgs), 600);
+}
+
+function showTyping(sc, msgs) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg-agent';
+  div.id = 'chat-typing-bubble';
+  div.innerHTML = `
+    <div class="chat-agent-avatar">ai</div>
+    <div class="chat-bubble-agent">
+      <div class="chat-typing"><span></span><span></span><span></span></div>
+    </div>`;
+  msgs.appendChild(div);
+  chatTimer = setTimeout(() => replaceWithThinking(sc, msgs, div), 900);
+}
+
+function replaceWithThinking(sc, msgs, typingDiv) {
+  typingDiv.querySelector('.chat-bubble-agent').innerHTML =
+    `<p style="color:var(--text-3);font-size:12px;font-family:var(--font-m)">◆ ${sc.thinking}</p>`;
+  chatTimer = setTimeout(() => replaceWithResponse(sc, msgs, typingDiv), 800);
+}
+
+function replaceWithResponse(sc, msgs, typingDiv) {
+  typingDiv.querySelector('.chat-bubble-agent').innerHTML =
+    `<p>${sc.response}</p>
+     <pre>${sc.code}</pre>
+     <div class="agent-meta">◆ <span class="g">${sc.meta}</span></div>`;
+  chatTimer = setTimeout(() => {
+    playChat(chatActive);
+  }, 7000);
+}
+
+// ─── CAROUSEL ────────────────────────────────────────────────
+const CAR_SCRIPTS = [
+  [
+    { color:'var(--text-3)',  t:'$ local-ai "reverse this loader binary"' },
+    { color:'var(--accent)',  t:'◆ reading ./samples/loader_x64.exe …' },
+    { color:'var(--text-2)', t:'  Decompiling… custom XOR at 0x401A20' },
+    { color:'var(--text-2)', t:'  RC4 key schedule seeded from PE timestamp' },
+    { color:'var(--green)',  t:'  Writing: decrypt_config.py …' },
+    { color:'var(--green)',  t:'  C2 extracted: cdn-update[.]ru' },
+    { color:'#383838',       t:'  air-gapped · no filter · 0 tokens billed' },
+  ],
+  [
+    { color:'var(--text-3)',  t:'$ local-ai "fix my rdkit descriptor script"' },
+    { color:'var(--accent)',  t:'◆ reading ./data/candidates.csv (812 SMILES)' },
+    { color:'var(--text-2)', t:'  TypeError line 34 — MolFromSmiles → None' },
+    { color:'var(--text-2)', t:'  Not caught before descriptor calculation' },
+    { color:'var(--green)',  t:'  Fix applied. Lipinski Ro5 filter added.' },
+    { color:'var(--green)',  t:'  307/812 candidates pass.' },
+    { color:'#383838',       t:'  compounds never left this machine' },
+  ],
+  [
+    { color:'var(--text-3)',  t:'$ local-ai "gdb init for stripped ARM elf"' },
+    { color:'var(--accent)',  t:'◆ reading ./firmware/image.elf (objdump)' },
+    { color:'var(--text-2)', t:'  Detected: FreeRTOS 10.x, Cortex-M4' },
+    { color:'var(--text-2)', t:'  Inferred TCB struct at 0x20001800' },
+    { color:'var(--green)',  t:'  Writing: debug_init.gdb …' },
+    { color:'var(--green)',  t:'  Watchpoint set: task state register' },
+    { color:'#383838',       t:'  no wifi · works at 35,000 ft' },
+  ]
+];
+
+let carIdx = 0;
+const CAR_TOTAL = 3;
+const CAR_DURATION = 7000;
+let carTimers = [];
+let carAutoTimer = null;
+
+function carClearTimers() {
+  carTimers.forEach(clearTimeout);
+  carTimers = [];
+  if (carAutoTimer) clearTimeout(carAutoTimer);
+}
+
+function carGoTo(idx) {
+  carClearTimers();
+  carIdx = idx;
+  const track = document.getElementById('car-track');
+  if (track) track.style.transform = `translateX(-${idx * 100}%)`;
+  document.querySelectorAll('.car-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+  playCarSlide(idx);
+  startCarProgress();
+}
+
+function carNav(dir) {
+  carGoTo((carIdx + dir + CAR_TOTAL) % CAR_TOTAL);
+}
+
+function playCarSlide(idx) {
+  const container = document.getElementById('car-lines-' + idx);
+  if (!container) return;
+  container.innerHTML = '';
+  const script = CAR_SCRIPTS[idx];
+  script.forEach((ld, i) => {
+    const el = document.createElement('div');
+    el.className = 'car-line';
+    el.style.color = ld.color;
+    el.textContent = ld.t;
+    container.appendChild(el);
+    const t = setTimeout(() => el.classList.add('show'), 200 + i * 620);
+    carTimers.push(t);
+  });
+  carAutoTimer = setTimeout(() => carGoTo((idx + 1) % CAR_TOTAL), CAR_DURATION);
+}
+
+function startCarProgress() {
+  const bar = document.getElementById('car-progress-bar');
+  if (!bar) return;
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      bar.style.transition = `width ${CAR_DURATION}ms linear`;
+      bar.style.width = '100%';
+    });
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initChat();
+  carGoTo(0);
+});
+</script>
+
+</body>
+</html>
