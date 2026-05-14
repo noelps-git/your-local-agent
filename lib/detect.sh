@@ -40,7 +40,7 @@ detect_os() {
   MACOS_MAJOR="$(echo "$MACOS_VERSION" | cut -d. -f1)"
 
   if [[ "$MACOS_MAJOR" -lt 12 ]]; then
-    fail "macOS 12 (Monterey) or higher is required for Metal GPU support. You have macOS ${MACOS_VERSION}. Please upgrade and try again."
+    fail "macOS 12 (Monterey) or higher is required. You have macOS ${MACOS_VERSION}. Please upgrade and try again."
   fi
 
   # Friendly name mapping — updated for Apple new versioning (26 = Tahoe)
@@ -75,8 +75,8 @@ detect_chip() {
     ok "Apple Silicon detected — Metal GPU acceleration supported"
   elif [[ "$arch" == "x86_64" ]]; then
     CHIP_TYPE="intel"
-    warn "Intel Mac detected. Performance will be significantly slower. Apple Silicon support is recommended."
-    warn "Intel Mac full support is on the roadmap. Continuing with limited performance expectations."
+    warn "Intel Mac detected — CPU-only inference (no GPU acceleration). Responses will be slower than Apple Silicon."
+    warn "Smaller models (4B/8B) are strongly recommended for acceptable speed on Intel."
   else
     fail "Unknown architecture: ${arch}. Cannot continue."
   fi
@@ -260,16 +260,30 @@ detect_existing_installs() {
 recommend_model() {
   info "Selecting recommended model based on ${USABLE_RAM_GB}GB usable RAM..."
 
-  if [[ "$USABLE_RAM_GB" -ge 30 ]]; then
-    RECOMMENDED_MODEL_ID="qwen3-32b"
-  elif [[ "$USABLE_RAM_GB" -ge 22 ]]; then
-    RECOMMENDED_MODEL_ID="qwen3-14b"
-  elif [[ "$USABLE_RAM_GB" -ge 14 ]]; then
-    RECOMMENDED_MODEL_ID="qwen3-8b"
-  elif [[ "$USABLE_RAM_GB" -ge 4 ]]; then
-    RECOMMENDED_MODEL_ID="qwen3-4b"
+  if [[ "${CHIP_TYPE}" == "intel" ]]; then
+    # Intel Macs use CPU-only inference — cap at 8B for usable speed.
+    # Larger models run but responses will be very slow on Intel CPUs.
+    if [[ "$USABLE_RAM_GB" -ge 14 ]]; then
+      RECOMMENDED_MODEL_ID="qwen3-8b"
+    elif [[ "$USABLE_RAM_GB" -ge 4 ]]; then
+      RECOMMENDED_MODEL_ID="qwen3-4b"
+    else
+      fail "Usable RAM (${USABLE_RAM_GB}GB) is too low to run any supported model. Minimum 4GB usable RAM required."
+    fi
+    warn "Intel CPU inference: capped recommendation at ${RECOMMENDED_MODEL_ID} for acceptable speed."
+    warn "You can override this and select a larger model, but expect slow responses."
   else
-    fail "Usable RAM (${USABLE_RAM_GB}GB) is too low to run any supported model. Minimum 4GB usable RAM required."
+    if [[ "$USABLE_RAM_GB" -ge 30 ]]; then
+      RECOMMENDED_MODEL_ID="qwen3-32b"
+    elif [[ "$USABLE_RAM_GB" -ge 22 ]]; then
+      RECOMMENDED_MODEL_ID="qwen3-14b"
+    elif [[ "$USABLE_RAM_GB" -ge 14 ]]; then
+      RECOMMENDED_MODEL_ID="qwen3-8b"
+    elif [[ "$USABLE_RAM_GB" -ge 4 ]]; then
+      RECOMMENDED_MODEL_ID="qwen3-4b"
+    else
+      fail "Usable RAM (${USABLE_RAM_GB}GB) is too low to run any supported model. Minimum 4GB usable RAM required."
+    fi
   fi
 
   ok "Recommended model: ${RECOMMENDED_MODEL_ID}"

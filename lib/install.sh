@@ -326,7 +326,8 @@ install_python() {
   PYTHON_BIN="$(brew --prefix python@3.11)/bin/python3.11"
 
   if [[ ! -x "$PYTHON_BIN" ]]; then
-    PYTHON_BIN="$(find /opt/homebrew /usr/local -name "python3.11" -type f 2>/dev/null | head -1)"
+    # Search both Apple Silicon (/opt/homebrew) and Intel (/usr/local) Homebrew paths
+    PYTHON_BIN="$(find /opt/homebrew/bin /usr/local/bin /opt/homebrew /usr/local -name "python3.11" -type f 2>/dev/null | head -1)"
     [[ -z "$PYTHON_BIN" ]] && fail "python3.11 not found after install. Try: brew install python@3.11"
   fi
 

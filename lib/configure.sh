@@ -118,10 +118,13 @@ write_aliases() {
   local context="${LLAMA_CONTEXT}"
   local threads="${LLAMA_THREADS}"
 
-  # Adjust GPU layers for Intel — use CPU only
+  # Adjust settings for Intel — CPU-only inference, more threads, smaller context
   if [[ "${CHIP_TYPE}" == "intel" ]]; then
     gpu_layers=0
-    warn "Intel Mac detected — GPU offloading disabled. Using CPU inference."
+    threads=6    # Intel MBP 2018 has 6-core CPU; more threads help with CPU-only inference
+    context=1024 # Smaller context reduces RAM pressure when model runs on CPU
+    warn "Intel Mac detected — GPU offloading disabled. Using CPU-only inference."
+    warn "Using ${threads} CPU threads, context window ${context} tokens."
   fi
 
   # Build the alias block
@@ -148,7 +151,7 @@ alias local-ai-stop='pkill -f "llama-server" && echo "Server stopped."'
 alias local-ai-status='curl -s http://localhost:${port}/health && echo "" || echo "Server is not running. Run local-ai-start first."'
 
 # Update your-local-agent to the latest version
-alias local-ai-update='curl -fsSL https://raw.githubusercontent.com/you/your-local-agent/main/update.sh | bash'
+alias local-ai-update='curl -fsSL https://raw.githubusercontent.com/noelps-git/your-local-agent/main/update.sh | bash'
 
 # Show which model is loaded and server info
 alias local-ai-info='echo "Model : ${SELECTED_MODEL_FILE}" && echo "Server: http://localhost:${port}" && echo "Log   : ${LOCAL_AI_DIR}/server.log"'
@@ -203,6 +206,16 @@ source_profile() {
 # -----------------------------------------------------------------------------
 
 write_fish_instructions() {
+  # Compute effective settings (mirrors write_aliases logic)
+  local fish_gpu_layers="${LLAMA_GPU_LAYERS}"
+  local fish_context="${LLAMA_CONTEXT}"
+  local fish_threads="${LLAMA_THREADS}"
+  if [[ "${CHIP_TYPE}" == "intel" ]]; then
+    fish_gpu_layers=0
+    fish_threads=6
+    fish_context=1024
+  fi
+
   warn "Fish shell detected — automatic alias setup is not yet supported."
   echo ""
   echo "  Add these functions to your Fish config manually:"
@@ -211,8 +224,8 @@ write_fish_instructions() {
   echo "  ──────────────────────────────────────────────────"
   echo "  function local-ai-start"
   echo "      ${LLAMA_BIN_DIR}/llama-server -m \"${MODEL_PATH}\" \\"
-  echo "          --port ${LLAMA_PORT} -ngl ${LLAMA_GPU_LAYERS} \\"
-  echo "          -c ${LLAMA_CONTEXT} &"
+  echo "          --port ${LLAMA_PORT} -ngl ${fish_gpu_layers} \\"
+  echo "          -c ${fish_context} --threads ${fish_threads} &"
   echo "      sleep 5"
   echo "      aider --openai-api-base http://localhost:${LLAMA_PORT}/v1 --openai-api-key local --model openai/local"
   echo "  end"

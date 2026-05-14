@@ -18,6 +18,7 @@
 
 [![macOS](https://img.shields.io/badge/macOS-12%2B-black?style=flat-square&logo=apple)](https://www.apple.com/macos/)
 [![Apple Silicon](https://img.shields.io/badge/Apple_Silicon-M1%20→%20M4-black?style=flat-square)](https://www.apple.com/mac/)
+[![Intel Mac](https://img.shields.io/badge/Intel_Mac-2018%2B-black?style=flat-square)](https://support.apple.com/en-us/111893)
 [![Models](https://img.shields.io/badge/model-Qwen3%204B–32B-black?style=flat-square)](https://huggingface.co/ggml-org)
 [![License](https://img.shields.io/badge/license-MIT-black?style=flat-square)](LICENSE)
 [![Free](https://img.shields.io/badge/cost-free%20forever-black?style=flat-square)]()
@@ -46,11 +47,17 @@ Make sure your machine meets these requirements before running anything.
 
 | Requirement | Minimum | Notes |
 |---|---|---|
-| **macOS** | 12 Monterey | Works on 13, 14, 15 too |
-| **Chip** | Apple Silicon (M1+) | M2/M3/M4 recommended |
+| **macOS** | 12 Monterey | Works on 13, 14, 15, 26 too |
+| **Chip** | Apple Silicon M1+ or Intel (2018+) | See chip notes below |
 | **RAM** | 8 GB | 16 GB+ for better models |
 | **Free disk** | 8 GB | Up to 20 GB for the 32B model |
 | **Internet** | Required once | Only for initial setup and updates |
+
+### Chip notes
+
+**Apple Silicon (M1 → M4)** — full Metal GPU acceleration. Best performance. Models up to 32B run smoothly.
+
+**Intel Mac (MacBook Pro 2018+)** — CPU-only inference, no GPU acceleration. Works fully but responses are slower. Setup automatically caps the recommended model at 8B for usable speed. Larger models can still be manually selected — expect long wait times.
 
 ### Software prerequisites
 
@@ -145,7 +152,9 @@ local-ai-update    # pull latest scripts + check for better models
 
 ## Which model do you get?
 
-Setup reads your RAM and picks automatically. No config files, no manual decisions.
+Setup reads your RAM and chip and picks automatically. No config files, no manual decisions.
+
+**Apple Silicon**
 
 | RAM | Model | Size | Speed |
 |---|---|---|---|
@@ -153,6 +162,13 @@ Setup reads your RAM and picks automatically. No config files, no manual decisio
 | 16 GB | Qwen3 8B | 5.0 GB | ~25 tok/s |
 | 24 GB | Qwen3 14B | 9.0 GB | ~20 tok/s |
 | 32 GB+ | Qwen3 32B | 19.5 GB | ~12 tok/s |
+
+**Intel Mac (CPU-only — capped at 8B for speed)**
+
+| RAM | Model | Size | Speed (approx) |
+|---|---|---|---|
+| 8–15 GB | Qwen3 4B | 3.2 GB | ~5–8 tok/s |
+| 16 GB+ | Qwen3 8B | 5.0 GB | ~3–5 tok/s |
 
 You can override the auto-selection if you know what you're doing — it'll warn you, then let you proceed.
 
@@ -196,8 +212,8 @@ You can override the auto-selection if you know what you're doing — it'll warn
 ```
 Your Mac
 │
-├── llama-server          ← runs the AI model using your M-series GPU
-│     └── Qwen3 (4B–32B)  ← automatically chosen for your RAM
+├── llama-server          ← runs the AI model (Metal GPU on Apple Silicon,
+│     └── Qwen3 (4B–32B)    CPU-only on Intel) — chosen for your RAM
 │
 └── Aider                 ← reads your files, talks to the model,
       └── your terminal     answers in your project context
@@ -302,7 +318,18 @@ Setup detects what's already done and skips it — only the download resumes.
 
 ### `llama-server: Bad CPU type in executable`
 
-You're on an Intel Mac. This build targets Apple Silicon only. Intel support is on the roadmap — for now, this won't work on x86_64 Macs.
+This means the wrong binary architecture was downloaded. Re-run setup — it detects your chip and fetches the correct build (`macos-x86_64` for Intel, `macos-arm64` for Apple Silicon).
+
+```bash
+rm -rf ~/.local-ai/bin
+bash setup.sh
+```
+
+---
+
+### Slow responses on Intel Mac
+
+Intel Macs use CPU-only inference. This is expected — responses will be several seconds per token on larger models. Setup caps the recommendation at 8B for usable speed. Stick to 4B if you need faster responses.
 
 ---
 
@@ -386,7 +413,7 @@ The setup script was written with the following in mind:
 ## Roadmap
 
 - [ ] Linux + NVIDIA CUDA support
-- [ ] Intel Mac support
+- [x] Intel Mac support (MacBook Pro 2018+)
 - [ ] Fish shell alias setup
 - [ ] Open WebUI browser interface (chat UI on `localhost:3000`)
 - [ ] Community benchmark table (model × chip × speed)
