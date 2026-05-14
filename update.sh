@@ -134,18 +134,27 @@ check_model_update() {
     return
   fi
 
-  # Re-calculate recommended model based on current RAM
+  # Re-calculate recommended model based on current RAM and chip
   local usable_ram=$(( CURRENT_RAM_GB - 2 ))
   local recommended_id=""
 
-  if [[ "$usable_ram" -ge 30 ]]; then
-    recommended_id="qwen3-32b"
-  elif [[ "$usable_ram" -ge 22 ]]; then
-    recommended_id="qwen3-14b"
-  elif [[ "$usable_ram" -ge 14 ]]; then
-    recommended_id="qwen3-8b"
-  elif [[ "$usable_ram" -ge 4 ]]; then
-    recommended_id="qwen3-4b"
+  if [[ "${CURRENT_CHIP}" == "intel" ]]; then
+    # Intel: cap at 8B for CPU-only inference speed
+    if [[ "$usable_ram" -ge 14 ]]; then
+      recommended_id="qwen3-8b"
+    elif [[ "$usable_ram" -ge 4 ]]; then
+      recommended_id="qwen3-4b"
+    fi
+  else
+    if [[ "$usable_ram" -ge 30 ]]; then
+      recommended_id="qwen3-32b"
+    elif [[ "$usable_ram" -ge 22 ]]; then
+      recommended_id="qwen3-14b"
+    elif [[ "$usable_ram" -ge 14 ]]; then
+      recommended_id="qwen3-8b"
+    elif [[ "$usable_ram" -ge 4 ]]; then
+      recommended_id="qwen3-4b"
+    fi
   fi
 
   if [[ -z "$recommended_id" ]]; then
@@ -239,10 +248,19 @@ for m in models:
   info "Downloading ${new_file} (${NEW_MODEL_SIZE}GB)..."
   info "This may take 5–20 minutes depending on your internet speed."
 
-  huggingface-cli download "${new_repo}" \
+  # Use hf CLI (new name) with fallback to legacy huggingface-cli
+  local hf_cmd
+  if command -v hf &>/dev/null; then
+    hf_cmd="hf"
+  elif command -v huggingface-cli &>/dev/null; then
+    hf_cmd="huggingface-cli"
+  else
+    fail "Hugging Face CLI not found. Install: brew install huggingface-cli"
+  fi
+
+  "$hf_cmd" download "${new_repo}" \
     "${new_file}" \
     --local-dir "${MODELS_DIR}" \
-    --resume-download \
     || fail "Model download failed. Run local-ai-update again to resume."
 
   ok "New model downloaded: ${new_model_path}"
@@ -372,7 +390,7 @@ update_llama() {
   fi
 
   local release_json
-  release_json="$(curl -fsSL --max-time 15 "https://api.github.com/repos/ggerganov/llama.cpp/releases/latest" 2>/dev/null)" || {
+  release_json="$(curl -fsSL --max-time 15 "https://api.github.com/repos/ggml-org/llama.cpp/releases/latest" 2>/dev/null)" || {
     warn "Could not reach GitHub API — skipping Llama.cpp update"
     return
   }

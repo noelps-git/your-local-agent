@@ -64,7 +64,7 @@ guard_prerequisites() {
 check_binaries() {
   section "Checking Installed Binaries"
 
-  local binaries=("brew" "python3" "aider" "huggingface-cli")
+  local binaries=("brew" "python3" "aider")
 
   for binary in "${binaries[@]}"; do
     if command -v "$binary" &>/dev/null; then
@@ -73,6 +73,15 @@ check_binaries() {
       fail_check "${binary} not found in PATH — installation may have failed"
     fi
   done
+
+  # Check Hugging Face CLI — new name is `hf`, fallback is `huggingface-cli`
+  if command -v hf &>/dev/null; then
+    pass "hf (Hugging Face CLI) found at $(command -v hf)"
+  elif command -v huggingface-cli &>/dev/null; then
+    pass "huggingface-cli found at $(command -v huggingface-cli)"
+  else
+    fail_check "Hugging Face CLI not found — install: brew install huggingface-cli"
+  fi
 
   # Check Llama.cpp binary specifically in its install dir
   local llama_bin="${HOME}/.local-ai/bin/llama-server"
@@ -111,7 +120,7 @@ check_model_file() {
 # -----------------------------------------------------------------------------
 
 check_aider_config() {
-  section "Checking Pi Configuration"
+  section "Checking Aider Configuration"
 
   local aider_config="${HOME}/.aider/.aider.conf.yml"
 
@@ -120,24 +129,23 @@ check_aider_config() {
     return
   fi
 
-  # Verify endpoint is pointing to localhost
-  local endpoint
-  endpoint="$(python3 -c "import json; d=json.load(open('${aider_config}')); print(d.get('endpoint',''))" 2>/dev/null || echo "")"
-
-  if [[ "$endpoint" == "http://localhost:${LLAMA_PORT}/v1" ]]; then
-    pass "Aider config points to local server (${endpoint})"
+  # Config is YAML — use grep to verify key fields without a YAML parser dependency
+  if grep -q "openai-api-base:" "$aider_config" 2>/dev/null; then
+    local endpoint
+    endpoint="$(grep 'openai-api-base:' "$aider_config" | head -1 | sed 's/.*openai-api-base:[[:space:]]*//')"
+    if [[ "$endpoint" == *"localhost:${LLAMA_PORT}"* ]]; then
+      pass "Aider config points to local server (${endpoint})"
+    else
+      fail_check "Aider config endpoint looks wrong: '${endpoint}' — expected http://localhost:${LLAMA_PORT}/v1"
+    fi
   else
-    fail_check "Aider config endpoint is incorrect: '${endpoint}' — expected http://localhost:${LLAMA_PORT}/v1"
+    fail_check "Aider config missing openai-api-base — configuration may be corrupt"
   fi
 
-  # Verify model file is referenced
-  local model_file
-  model_file="$(python3 -c "import json; d=json.load(open('${aider_config}')); print(d.get('model_file',''))" 2>/dev/null || echo "")"
-
-  if [[ -n "$model_file" ]]; then
-    pass "Aider config references model: ${model_file}"
+  if grep -q "model:" "$aider_config" 2>/dev/null; then
+    pass "Aider config has model set"
   else
-    warn_check "Aider config does not reference a model file"
+    warn_check "Aider config is missing model field"
   fi
 }
 
@@ -207,19 +215,21 @@ start_test_server() {
   fi
 
   local gpu_layers=99
+  local threads=4
   if [[ "${CHIP_TYPE}" == "intel" ]]; then
     gpu_layers=0
+    threads=6
   fi
 
   info "Starting llama-server with ${MODEL_PATH}..."
-  info "This may take 10–15 seconds on first load..."
+  info "This may take 10–15 seconds on first load (longer on Intel)..."
 
   "$llama_bin" \
     -m "${MODEL_PATH}" \
     --port "${LLAMA_PORT}" \
     -ngl "${gpu_layers}" \
     -c 512 \
-    --threads 4 \
+    --threads "${threads}" \
     --log-disable \
     > "${SERVER_LOG}" 2>&1 &
 
@@ -275,8 +285,14 @@ send_test_prompt() {
 
   info "Sending: \"${TEST_PROMPT}\""
 
+  # Intel CPU inference is slow — allow up to 120s for the test prompt
+  local prompt_timeout=30
+  if [[ "${CHIP_TYPE}" == "intel" ]]; then
+    prompt_timeout=120
+  fi
+
   local response
-  response="$(curl -s --max-time 30 \
+  response="$(curl -s --max-time "${prompt_timeout}" \
     "http://localhost:${LLAMA_PORT}/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -d "{
@@ -352,7 +368,7 @@ print_verification_report() {
     echo "  To start your local agent:"
     echo ""
     echo "    source ${SHELL_PROFILE:-~/.zshrc}"
-    echo "    ai-start"
+    echo "    local-ai-start"
     echo ""
     echo "  Full log: ${LOG_FILE}"
     log "Verification passed — ${PASS_COUNT} checks passed, ${WARN_COUNT} warnings"
@@ -365,7 +381,7 @@ print_verification_report() {
     echo "  Common fixes:"
     echo "    → Restart terminal and run: source ${SHELL_PROFILE:-~/.zshrc}"
     echo "    → Re-run setup: bash setup.sh"
-    echo "    → Open an issue: github.com/you/your-local-agent/issues"
+    echo "    → Open an issue: github.com/noelps-git/your-local-agent/issues"
     echo ""
     log "Verification completed with failures — ${FAIL_COUNT} failed, ${PASS_COUNT} passed, ${WARN_COUNT} warnings"
   fi
